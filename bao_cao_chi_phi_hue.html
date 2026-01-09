@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo cáo chi phí Huế</title>
+
+  <!-- Fonts: Outfit for a modern, clean look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(148, 163, 184, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-success: #34d399;
+      --accent-danger: #f87171;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.1) 0px, transparent 50%);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .table {
+      --bs-table-bg: transparent;
+      --bs-table-color: var(--text-main);
+      --bs-table-border-color: var(--card-border);
+    }
+
+    .table thead th {
+      background: rgba(30, 41, 59, 0.95);
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom-width: 1px;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .table td {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+
+    .sticky-head thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 1px 0 var(--card-border);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text-main);
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 0.4rem 1rem;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .text-success-custom {
+      color: var(--accent-success) !important;
+    }
+
+    .text-danger-custom {
+      color: var(--accent-danger) !important;
+    }
+
+    .small-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.5);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+    <!-- Header -->
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-5">
+      <div>
+        <h1 class="mb-2">Báo cáo chi phí Huế</h1>
+        <div class="small-note d-flex align-items-center gap-2">
+          <span class="d-inline-block rounded-circle bg-success" style="width:8px; height:8px"></span>
+          Cập nhật lúc: 2026-01-09 08:51:17
+          <span class="mx-1">•</span>
+          Tự động chia đều cho người tham gia
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-glass" onclick="window.print()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer me-2"
+            viewBox="0 0 16 16">
+            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1" />
+            <path
+              d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zM4 11h8v3H4z" />
+          </svg>
+          In báo cáo
+        </button>
+        <button class="btn btn-glass" onclick="copyJSON()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-code-slash me-2" viewBox="0 0 16 16">
+            <path
+              d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z" />
+          </svg>
+          JSON Data
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-12 col-md-4">
+        <div class="card p-4 h-100 border-0 position-relative overflow-hidden">
+          <div class="position-absolute top-0 end-0 p-3 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-wallet2"
+              viewBox="0 0 16 16">
+              <path
+                d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpiTotal">—</div>
+          <div class="kpi-label">Tổng chi phí chuyến đi</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card p-4 h-100 border-0 position-relative overflow-hidden">
+          <div class="position-absolute top-0 end-0 p-3 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
+              class="bi bi-check-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+              <path
+                d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpiPaid">—</div>
+          <div class="kpi-label">Tổng đã thanh toán</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="card p-4 h-100 border-0 position-relative overflow-hidden">
+          <div class="position-absolute top-0 end-0 p-3 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-people"
+              viewBox="0 0 16 16">
+              <path
+                d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.176.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m-7 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m7 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6M4.5 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpiPeople">—</div>
+          <div class="kpi-label">Thành viên tham gia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section 1 -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-6">
+        <div class="card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-title">Tỷ trọng chi phí (Phải chịu)</div>
+          </div>
+          <div style="position: relative; height: 300px; width:100%">
+            <canvas id="chartShare"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-title">Đối soát: Đã trả vs Phải chịu</div>
+          </div>
+          <div style="position: relative; height: 300px; width:100%">
+            <canvas id="chartPaidOwed"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section 2 -->
+    <div class="row g-4 mb-5">
+      <div class="col-12 col-lg-6">
+        <div class="card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-title">Dư nợ (Net)</div>
+            <div class="small-note text-success-custom">Dương (+): Nhận lại</div>
+          </div>
+          <div style="position: relative; height: 300px; width:100%">
+            <canvas id="chartNet"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-title">Top khoản chi lớn</div>
+          </div>
+          <div style="position: relative; height: 300px; width:100%">
+            <canvas id="chartTop"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- People Table -->
+    <div class="card mb-4 overflow-hidden">
+      <div class="p-4 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
+        <div class="section-title">Tổng hợp theo thành viên</div>
+        <div class="small-note">Click header để sắp xếp</div>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0 sticky-head" id="tblPeople">
+          <thead>
+            <tr>
+              <th class="ps-4" style="cursor:pointer" onclick="sortTable('tblPeople',0)">Thành viên</th>
+              <th class="text-end" style="cursor:pointer" onclick="sortTable('tblPeople',1)">Đã trả</th>
+              <th class="text-end" style="cursor:pointer" onclick="sortTable('tblPeople',2)">Thực chi (Phải chịu)</th>
+              <th class="text-end pe-4" style="cursor:pointer" onclick="sortTable('tblPeople',3)">Chênh lệch</th>
+            </tr>
+          </thead>
+          <tbody id="peopleBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Transfers -->
+    <div class="card mb-4 overflow-hidden">
+      <div class="p-4 border-bottom border-white border-opacity-10">
+        <div class="section-title mb-1">Phương án chuyển khoản (Gợi ý)</div>
+        <div class="small-note">Tối ưu hóa dòng tiền để tất toán công nợ</div>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0" id="tblTransfers">
+          <thead>
+            <tr>
+              <th class="ps-4">Chuyển từ</th>
+              <th>Đến tài khoản</th>
+              <th class="text-end pe-4">Số tiền</th>
+            </tr>
+          </thead>
+          <tbody id="transferBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Detailed Expenses -->
+    <div class="card overflow-hidden">
+      <div class="p-4 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
+        <div class="section-title">Chi tiết các khoản chi</div>
+      </div>
+      <div class="table-responsive" style="max-height: 600px;">
+        <table class="table align-middle mb-0 sticky-head" id="tblExpenses">
+          <thead>
+            <tr>
+              <th class="ps-4" style="cursor:pointer" onclick="sortTable('tblExpenses',0)">Nội dung</th>
+              <th class="text-end" style="cursor:pointer" onclick="sortTable('tblExpenses',1)">Số tiền</th>
+              <th style="cursor:pointer" onclick="sortTable('tblExpenses',2)">Người trả</th>
+              <th style="cursor:pointer" onclick="sortTable('tblExpenses',3)">Người sử dụng</th>
+              <th class="text-center" style="cursor:pointer" onclick="sortTable('tblExpenses',4)">Số ng.</th>
+              <th class="text-end" style="cursor:pointer" onclick="sortTable('tblExpenses',5)">Chia đầu người</th>
+              <th class="pe-4" style="cursor:pointer" onclick="sortTable('tblExpenses',6)">Chi tiết phân bổ</th>
+            </tr>
+          </thead>
+          <tbody id="expenseBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center my-5">
+      <p class="small-note opacity-50">Báo cáo được tạo tự động. Vui lòng kiểm tra lại nếu có sai sót.</p>
+    </div>
+  </div>
+
+  <script>
+    // --- DATA PRESERVED FROM ORIGINAL ---
+    const DATA = { "people": ["Linh", "Lượng", "Phương", "Hải", "Duy", "Hà"], "owed": [5335734, 5752733, 5335733, 5167400, 1912600, 678800], "paid": [14497000, 9686000, 0, 0, 0, 0], "net": [9161266, 3933267, -5335733, -5167400, -1912600, -678800], "total": 24183000, "top_items": { "labels": ["Phòng KS", "Nhậu tối", "Lẩu hấp Aeon", "Mua đồ trước khi đi", "Phòng homstay", "Ăn trưa", "Chè", "Bánh Canh Nam Phổ", "Ốc", "Mua mồi Aeonmall", "Cafe"], "amounts": [8586000, 6978000, 2819000, 1431000, 1100000, 738000, 618000, 575000, 505000, 417000, 416000] }, "expenses": [{ "Khoản": "Mua đồ trước khi đi", "Số tiền": 1431000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Duy", "Số người": 5, "Chia mỗi người": 286200, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:286200; Lượng:286200; Phương:286200; Hải:286200; Duy:286200" }, { "Khoản": "Ăn trưa", "Số tiền": 738000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Duy", "Số người": 5, "Chia mỗi người": 147600, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:147600; Lượng:147600; Phương:147600; Hải:147600; Duy:147600" }, { "Khoản": "Cafe", "Số tiền": 416000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Duy", "Số người": 5, "Chia mỗi người": 83200, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:83200; Lượng:83200; Phương:83200; Hải:83200; Duy:83200" }, { "Khoản": "Nhậu tối", "Số tiền": 6978000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Duy", "Số người": 5, "Chia mỗi người": 1395600, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:1395600; Lượng:1395600; Phương:1395600; Hải:1395600; Duy:1395600" }, { "Khoản": "Bánh Canh Nam Phổ", "Số tiền": 575000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Hà", "Số người": 5, "Chia mỗi người": 115000, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:115000; Lượng:115000; Phương:115000; Hải:115000; Hà:115000" }, { "Khoản": "Chè", "Số tiền": 618000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải", "Số người": 4, "Chia mỗi người": 154500, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:154500; Lượng:154500; Phương:154500; Hải:154500" }, { "Khoản": "Lẩu hấp Aeon", "Số tiền": 2819000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương, Hải, Hà", "Số người": 5, "Chia mỗi người": 563800, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:563800; Lượng:563800; Phương:563800; Hải:563800; Hà:563800" }, { "Khoản": "Mua mồi Aeonmall", "Số tiền": 417000, "Người trả": "Linh", "Người sử dụng": "Lượng", "Số người": 1, "Chia mỗi người": 417000, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Lượng:417000" }, { "Khoản": "Ốc", "Số tiền": 505000, "Người trả": "Linh", "Người sử dụng": "Linh, Lượng, Phương", "Số người": 3, "Chia mỗi người": 168333, "Phần lẻ phân bổ": 1, "Phân bổ chi tiết": "Linh:168334; Lượng:168333; Phương:168333" }, { "Khoản": "Phòng homstay", "Số tiền": 1100000, "Người trả": "Lượng", "Người sử dụng": "Linh, Lượng, Phương, Hải", "Số người": 4, "Chia mỗi người": 275000, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:275000; Lượng:275000; Phương:275000; Hải:275000" }, { "Khoản": "Phòng KS", "Số tiền": 8586000, "Người trả": "Lượng", "Người sử dụng": "Linh, Lượng, Phương, Hải", "Số người": 4, "Chia mỗi người": 2146500, "Phần lẻ phân bổ": 0, "Phân bổ chi tiết": "Linh:2146500; Lượng:2146500; Phương:2146500; Hải:2146500" }], "people_table": [{ "Người": "Linh", "Đã trả": 14497000, "Phải chịu": 5335734, "Chênh lệch (nhận lại + / trả thêm -)": 9161266 }, { "Người": "Lượng", "Đã trả": 9686000, "Phải chịu": 5752733, "Chênh lệch (nhận lại + / trả thêm -)": 3933267 }, { "Người": "Phương", "Đã trả": 0, "Phải chịu": 5335733, "Chênh lệch (nhận lại + / trả thêm -)": -5335733 }, { "Người": "Hải", "Đã trả": 0, "Phải chịu": 5167400, "Chênh lệch (nhận lại + / trả thêm -)": -5167400 }, { "Người": "Duy", "Đã trả": 0, "Phải chịu": 1912600, "Chênh lệch (nhận lại + / trả thêm -)": -1912600 }, { "Người": "Hà", "Đã trả": 0, "Phải chịu": 678800, "Chênh lệch (nhận lại + / trả thêm -)": -678800 }], "transfers": [{ "Từ": "Phương", "Đến": "Linh", "Số tiền": 5335733 }, { "Từ": "Hải", "Đến": "Linh", "Số tiền": 3825533 }, { "Từ": "Hải", "Đến": "Lượng", "Số tiền": 1341867 }, { "Từ": "Duy", "Đến": "Lượng", "Số tiền": 1912600 }, { "Từ": "Hà", "Đến": "Lượng", "Số tiền": 678800 }], "generated_at": "2026-01-09 08:51:17" };
+    // ------------------------------------
+
+    const fmt = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+    function vnd(x) { return fmt.format(x) + " ₫"; }
+
+    function copyJSON() {
+      navigator.clipboard.writeText(JSON.stringify(DATA, null, 2));
+      alert("Đã copy dữ liệu JSON.");
+    }
+
+    function fillKPI() {
+      document.getElementById('kpiTotal').innerText = vnd(DATA.total);
+      document.getElementById('kpiPaid').innerText = vnd(DATA.paid.reduce((a, b) => a + b, 0));
+      document.getElementById('kpiPeople').innerText = DATA.people.length + " người";
+    }
+
+    function fillTables() {
+      const pb = document.getElementById('peopleBody');
+      pb.innerHTML = "";
+      DATA.people_table.forEach(r => {
+        const net = r["Chênh lệch (nhận lại + / trả thêm -)"];
+        const textClass = net > 0 ? 'text-success-custom' : (net < 0 ? 'text-danger-custom' : '');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+      <td class="ps-4"><span class="pill">${r["Người"]}</span></td>
+      <td class="text-end text-white-50">${vnd(r["Đã trả"])}</td>
+      <td class="text-end text-white-50">${vnd(r["Phải chịu"])}</td>
+      <td class="text-end pe-4 FW-bold ${textClass}">${vnd(net)}</td>
+    `;
+        pb.appendChild(tr);
+      });
+
+      const tb = document.getElementById('transferBody');
+      tb.innerHTML = "";
+      DATA.transfers.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+      <td class="ps-4"><span class="pill">${r["Từ"]}</span></td>
+      <td><span class="pill">${r["Đến"]}</span></td>
+      <td class="text-end pe-4 fw-bold text-info">${vnd(r["Số tiền"])}</td>
+    `;
+        tb.appendChild(tr);
+      });
+
+      const eb = document.getElementById('expenseBody');
+      eb.innerHTML = "";
+      DATA.expenses.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+      <td class="ps-4 fw-medium text-white">${r["Khoản"]}</td>
+      <td class="text-end">${vnd(r["Số tiền"])}</td>
+      <td><span class="pill">${r["Người trả"]}</span></td>
+      <td class="small text-white-50" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${r["Người sử dụng"]}">${r["Người sử dụng"]}</td>
+      <td class="text-center">${r["Số người"]}</td>
+      <td class="text-end">${vnd(r["Chia mỗi người"])}</td>
+      <td class="pe-4 small text-white-50" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${r["Phân bổ chi tiết"]}">${r["Phân bổ chi tiết"]}</td>
+    `;
+        eb.appendChild(tr);
+      });
+    }
+
+    function sortTable(tableId, colIndex) {
+      const table = document.getElementById(tableId);
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const isNumeric = rows.every(r => {
+        const t = r.children[colIndex].innerText.replace(/[\s₫,\.]/g, '').replace(/\./g, '');
+        return t === '' ? true : !isNaN(Number(t));
+      });
+      const current = table.getAttribute("data-sort") || "";
+      const key = tableId + ":" + colIndex;
+      const asc = current !== key;
+      table.setAttribute("data-sort", asc ? key : "");
+
+      rows.sort((a, b) => {
+        const A = a.children[colIndex].innerText.trim();
+        const B = b.children[colIndex].innerText.trim();
+        if (isNumeric) {
+          const nA = Number(A.replace(/[^0-9\-]/g, '')) || 0;
+          const nB = Number(B.replace(/[^0-9\-]/g, '')) || 0;
+          return asc ? (nA - nB) : (nB - nA);
+        } else {
+          return asc ? A.localeCompare(B, 'vi') : B.localeCompare(A, 'vi');
+        }
+      });
+
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    function buildCharts() {
+      Chart.defaults.color = '#94a3b8';
+      Chart.defaults.font.family = "'Outfit', sans-serif";
+
+      // Share doughnut (owed)
+      new Chart(document.getElementById('chartShare'), {
+        type: 'doughnut',
+        data: {
+          labels: DATA.people,
+          datasets: [{
+            data: DATA.owed,
+            backgroundColor: [
+              '#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185', '#34d399'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true } },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              padding: 12,
+              callbacks: { label: (ctx) => ` ${ctx.label}: ${vnd(ctx.parsed)}` }
+            }
+          }
+        }
+      });
+
+      // Paid vs owed bar
+      new Chart(document.getElementById('chartPaidOwed'), {
+        type: 'bar',
+        data: {
+          labels: DATA.people,
+          datasets: [
+            { label: 'Đã trả', data: DATA.paid, backgroundColor: '#34d399', borderRadius: 4 },
+            { label: 'Phải chịu', data: DATA.owed, backgroundColor: '#f472b6', borderRadius: 4 }
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { usePointStyle: true } },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              padding: 12,
+              callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${vnd(ctx.parsed.y)}` }
+            }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { callback: (v) => fmt.format(v) } }
+          }
+        }
+      });
+
+      // Net horizontal bar
+      new Chart(document.getElementById('chartNet'), {
+        type: 'bar',
+        data: {
+          labels: DATA.people,
+          datasets: [{
+            label: 'Chênh lệch',
+            data: DATA.net,
+            backgroundColor: (ctx) => ctx.raw >= 0 ? '#34d399' : '#f87171',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              padding: 12,
+              callbacks: { label: (ctx) => ` Net: ${vnd(ctx.parsed.x)}` }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { callback: (v) => fmt.format(v) } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+
+      // Top items bar
+      new Chart(document.getElementById('chartTop'), {
+        type: 'bar',
+        data: {
+          labels: DATA.top_items.labels,
+          datasets: [{
+            label: 'Số tiền',
+            data: DATA.top_items.amounts,
+            backgroundColor: '#38bdf8',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              padding: 12,
+              callbacks: { label: (ctx) => ` ${vnd(ctx.parsed.y)}` }
+            }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { callback: (v) => fmt.format(v) } }
+          }
+        }
+      });
+    }
+
+    fillKPI();
+    fillTables();
+    buildCharts();
+  </script>
+</body>
+
+</html>

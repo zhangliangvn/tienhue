@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/bao_cao_chi_phi_hue.html"
+    }
+  ]
+}
