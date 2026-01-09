@@ -173,6 +173,46 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(148, 163, 184, 0.5);
     }
+
+    /* Transfer Table Specifics */
+    #tblTransfers thead th {
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    #tblTransfers tbody tr td {
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    #tblTransfers tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill-transfer {
+      background-color: rgba(51, 65, 85, 0.8);
+      color: #f8fafc;
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-block;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .amount-transfer {
+      font-family: 'Outfit', sans-serif;
+      color: #22d3ee;
+      font-weight: 700;
+      font-size: 1rem;
+    }
   </style>
 </head>
 
@@ -413,9 +453,9 @@
       DATA.transfers.forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-      <td class="ps-4"><span class="pill">${r["Từ"]}</span></td>
-      <td><span class="pill">${r["Đến"]}</span></td>
-      <td class="text-end pe-4 fw-bold text-info">${vnd(r["Số tiền"])}</td>
+      <td class="ps-4"><span class="pill-transfer">${r["Từ"]}</span></td>
+      <td><span class="pill-transfer">${r["Đến"]}</span></td>
+      <td class="text-end pe-4 amount-transfer">${vnd(r["Số tiền"])}</td>
     `;
         tb.appendChild(tr);
       });
