@@ -448,13 +448,22 @@
         pb.appendChild(tr);
       });
 
+      const bankInfo = {
+        "Linh": "Techcombank: 415999",
+        "Lượng": "Techcombank: 5090003330"
+      };
+
       const tb = document.getElementById('transferBody');
       tb.innerHTML = "";
       DATA.transfers.forEach(r => {
         const tr = document.createElement('tr');
+        const bank = bankInfo[r["Đến"]] ? `<div class="small text-white-50 mt-1" style="font-size:0.75rem">${bankInfo[r["Đến"]]}</div>` : "";
         tr.innerHTML = `
       <td class="ps-4"><span class="pill-transfer">${r["Từ"]}</span></td>
-      <td><span class="pill-transfer">${r["Đến"]}</span></td>
+      <td>
+        <span class="pill-transfer">${r["Đến"]}</span>
+        ${bank}
+      </td>
       <td class="text-end pe-4 amount-transfer">${vnd(r["Số tiền"])}</td>
     `;
         tb.appendChild(tr);
